@@ -160,6 +160,7 @@ module.exports = function (grunt) {
         };
 
     if (!opts.user.password && !opts.user.token) {
+      grunt.log.write('\x07\x07');
       read({ prompt: 'Password: ', silent: true }, function (er, password) {
         opts.user.password = password;
         start(taskRefs);
