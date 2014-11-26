@@ -106,13 +106,13 @@ function downloadApps(taskRefs, callback) {
       taskRefs.needle.get(url, null,
           responseHandler("Getting download location for " + platform, taskRefs, function (response, data) {
             taskRefs.log.ok("Downloading " + platform + " app from " + data.location);
-            needle.get(data.location, null,
+            needle.get(data.location, {timeout:60000},
                 function (err, response, data) {
 				  if (err) {
 					taskRefs.log.error('Download failed for ' + platform + ': ' + err);
 				  }
 				  else {
-					taskRefs.log.ok("Downloaded " + platform + " app : " + data.length() + " bytes");
+					taskRefs.log.ok("Downloaded " + platform + " app : " + data.length + " bytes");
 					require('fs').writeFile(taskRefs.options.download[platform], data, completed);
 				  }
                 }
