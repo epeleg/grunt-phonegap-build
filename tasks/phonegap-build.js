@@ -105,11 +105,16 @@ function downloadApps(taskRefs, callback) {
     if (status === 'complete') {
       taskRefs.needle.get(url, null,
           responseHandler("Getting download location for " + platform, taskRefs, function (response, data) {
-            taskRefs.log.ok("Downloading " + platform + " app");
+            taskRefs.log.ok("Downloading " + platform + " app from " + data.location);
             needle.get(data.location, null,
                 function (err, response, data) {
-                  taskRefs.log.ok("Downloaded " + platform + " app");
-                  require('fs').writeFile(taskRefs.options.download[platform], data, completed);
+				  if (err) {
+					taskRefs.log.error('Download failed for ' + platform + ': ' + err);
+				  }
+				  else {
+					taskRefs.log.ok("Downloaded " + platform + " app : " + data.length() + " bytes");
+					require('fs').writeFile(taskRefs.options.download[platform], data, completed);
+				  }
                 }
             );
           }, completed)
@@ -160,6 +165,7 @@ module.exports = function (grunt) {
         };
 
     if (!opts.user.password && !opts.user.token) {
+      grunt.log.write('\x07\x07');
       read({ prompt: 'Password: ', silent: true }, function (er, password) {
         opts.user.password = password;
         start(taskRefs);
